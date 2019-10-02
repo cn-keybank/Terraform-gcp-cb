@@ -1,0 +1,7 @@
+project          = "keto-org-terraform-254518"
+organization_id  = "855338854565"
+billing_account  = "0136D5-6610C1-CADBF2"
+credentials_path = "/workspace/secrets/credentials.json"
+root_id          = "folders/55931853924"
+region           = "us-east4"
+org_state_bucket = "keto-org-terraform-254518-tfstate"

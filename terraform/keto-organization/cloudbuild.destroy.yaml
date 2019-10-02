@@ -1,0 +1,52 @@
+# Copyright 2019 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+steps:
+- id: 'decrypt SA credentials'
+  name: gcr.io/cloud-builders/gcloud
+  args:
+  - kms
+  - decrypt
+  - --ciphertext-file=secrets/keto-organization-sa.json.enc
+  - --plaintext-file=secrets/credentials.json
+  - --location=global
+  - --keyring=org-terraform
+  - --key=org-terraform
+
+- id: 'tf init'
+  name: 'hashicorp/terraform:0.12.9'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - |
+      cd terraform/keto-organization
+      terraform init
+
+
+# [START tf-destroy]
+# Note: installing python3 on top of image so project factory can run its preconditions check script
+- id: 'tf destroy'
+  name: 'hashicorp/terraform:0.12.9'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - | 
+      apk add --update python3 bash curl which
+      curl -sSL https://sdk.cloud.google.com | bash > /dev/null 2>&1
+      export PATH=$${HOME}/google-cloud-sdk/bin:$${PATH}
+      gcloud auth activate-service-account --key-file=secrets/credentials.json
+      cd terraform/keto-organization
+      terraform destroy -auto-approve
+# [END tf-apply]      

@@ -1,0 +1,5 @@
+project          = "keto-gcp-dev-sharedvpc"
+organization_id  = "855338854565"
+billing_account  = "0136D5-6610C1-CADBF2"
+credentials_path = "/workspace/secrets/credentials.json"
+region           = "us-east4"
